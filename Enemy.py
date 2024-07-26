@@ -57,8 +57,8 @@ class Enemies(pygame.sprite.Sprite):
                     self.last_attack = pygame.time.get_ticks()#derniere attaque
             #mort
             if self.health == 0:
-                targets.money += 200
-                targets.score += 1000
+                targets.money += 100
+                targets.score += 100
                 self.update_action(2)#mourir
                 self.alive = False#ennemi mort
                 

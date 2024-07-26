@@ -161,161 +161,152 @@ def draw_text(text, font, text_col, x, y):
  
 #fonction pour décrire le statut du jeu
 def show_info():
-        draw_text('Money: ' + str(castle.money), font, GREY, 10, 10)
-        draw_text('Score: ' + str(castle.score), font, GREY, 180, 10)
-        draw_text('High Score: ' + str(high_score), font, GREY, 180, 30)
-        draw_text('Level: ' + str(level), font, GREY, SCREEN_WIDTH // 2, 10)
-        draw_text('Health: ' + str(castle.health) + " / " + str(castle.max_health), font, GREY, SCREEN_WIDTH - 280, SCREEN_HEIGHT - 50)
-        draw_text('1000', font, GREY, SCREEN_WIDTH - 220 , 70)
-        draw_text(str(TOWER_COST), font, GREY, SCREEN_WIDTH - 150, 70)
-        draw_text('500', font, GREY, SCREEN_WIDTH - 70 , 70)
+	draw_text('Money: ' + str(castle.money), font, GREY, 10, 10)
+	draw_text('Score: ' + str(castle.score), font, GREY, 180, 10)
+	draw_text('High Score: ' + str(high_score), font, GREY, 180, 30)
+	draw_text('Level: ' + str(level), font, GREY, SCREEN_WIDTH // 2, 10)
+	draw_text('Health: ' + str(castle.health) + " / " + str(castle.max_health), font, GREY, SCREEN_WIDTH - 230, SCREEN_HEIGHT - 50)
+	draw_text('1000', font, GREY, SCREEN_WIDTH - 220 , 70)
+	draw_text(str(TOWER_COST), font, GREY, SCREEN_WIDTH - 150, 70)
+	draw_text('500', font, GREY, SCREEN_WIDTH - 70 , 70)
         
         
         
         
 #la classe chateau
-class Castle:
-    def __init__(self, image100, image50, image25, x , y, scale):
-        #initialiser les variables du chateau
-        self.health = 1000
-        self.max_health=self.health
-        self.fired= False
-        self.money = 0
-        self.score = 0
-  
-       #changer la taille de l'image
-        width = image100.get_width()
-        height = image100.get_height()
-    
-        #charger les images du chateau 
-        self.image100= pygame.transform.scale(image100, (int(width*scale), int(height*scale)))
-        self.image50= pygame.transform.scale(image50, (int(width*scale), int(height*scale)))
-        self.image25= pygame.transform.scale(image25, (int(width*scale), int(height*scale)))
-        self.rect= self.image100.get_rect()
-        #position du chateau
-        self.rect.center= (x,y)
-        self.x= x
-        self.y= y
-    
-    #les tirs du chateau
-    def shoot(self):
-        position = pygame.mouse.get_pos()
-        #calculer l'angle entre le chateau et la souris
-        x_distance = position[0] - self.rect.midleft[0]
-        y_distance = - (position[1] - self.rect.midleft[1])
-        self.angle = math.degrees(math.atan2(y_distance, x_distance))
-        
-        #creer un tir en utilisant le clic gauche
-        if pygame.mouse.get_pressed()[0] and self.fired == False and position[1] > 70:#le tir est en cours
-            self.fired= True
-            bullet = Bullet(bullet_img, self.rect.midleft[0], self.rect.midleft[1], self.angle)
-            bullet_group.add(bullet)
-        #réinitialiser le tir
-        if pygame.mouse.get_pressed()[0] == False:
-            self.fired= False
-  
-    #dessiner le chateau
-    def draw(self):
-        #vérifier quel image du chateau afficher en fonction de la santé
-        if self.health <= 500:
-            self.image = self.image25
-        elif self.health <= 200:
-            self.image = self.image50
-        else:
-            self.image = self.image100
-        #afficher l'image
-        screen.blit(self.image, self.rect)
-        
-    #la fonction de réparation du chateau payante
-    def repair(self):
-        if self.money >= 1000 and self.health < self.max_health:
-            self.health += 500
-            self.money -= 1000
-            if castle.health > castle.max_health:
-                castle.health = castle.max_health
-			
-    #la fonction d'ajout d'armure au chateau
-    def armour(self):
-        if self.money >= 500:
-            self.money -= 500
-            self.health += 250
-            
+class Castle():
+	def __init__(self, image100, image50, image25, x, y, scale):
+		self.health = 1000
+		self.max_health = self.health
+		self.fired = False
+		self.money = 0
+		self.score = 0
+        #initialiser l'image du chateau
+		width = image100.get_width()
+		height = image100.get_height()
+        #redimensionner l'image du chateau
+		self.image100 = pygame.transform.scale(image100, (int(width * scale), int(height * scale)))
+		self.image50 = pygame.transform.scale(image50, (int(width * scale), int(height * scale)))
+		self.image25 = pygame.transform.scale(image25, (int(width * scale), int(height * scale)))
+		self.rect = self.image100.get_rect()
+		self.rect.x = x
+		self.rect.y = y
+
+
+	def shoot(self):
+		pos = pygame.mouse.get_pos()
+		x_dist = pos[0] - self.rect.midleft[0]
+		y_dist = -(pos[1] - self.rect.midleft[1])
+		self.angle = math.degrees(math.atan2(y_dist, x_dist))
+		#get mouseclick
+		if pygame.mouse.get_pressed()[0] and self.fired == False and pos[1] > 70:
+			self.fired = True
+			bullet = Bullet(bullet_img, self.rect.midleft[0], self.rect.midleft[1], self.angle)
+			bullet_group.add(bullet)
+		#reset mouseclick
+		if pygame.mouse.get_pressed()[0] == False:
+			self.fired = False
+
+
+
+	def draw(self):
+		#check which image to use based on health
+		if self.health <= 250:
+			self.image = self.image25
+		elif self.health <= 500:
+			self.image = self.image50
+		else:
+			self.image = self.image100
+
+		screen.blit(self.image, self.rect)
+
+	def repair(self):
+		if self.money >= 1000 and self.health < self.max_health:
+			self.health += 500
+			self.money -= 1000
+			if castle.health > castle.max_health:
+				castle.health = castle.max_health
+
+	def armour(self):
+		if self.money >= 500:
+			self.max_health += 250
+			self.money -= 500
+
 
 #création d'une classe tower pour l'ajout des tours qui défendent le chateau
 class Tower(pygame.sprite.Sprite):
-    def __init__(self, image100,image50, image25, x, y, scale):
-            pygame.sprite.Sprite.__init__(self)
+	def __init__(self, image100, image50, image25, x, y, scale):
+		pygame.sprite.Sprite.__init__(self)
+        #initialiser les variables de la tour
+		self.got_target = False
+		self.angle = 0
+		self.last_shot = pygame.time.get_ticks()
+        #initialiser l'image de la tour
+		width = image100.get_width()
+		height = image100.get_height()
+        #redimensionner l'image de la tour
+		self.image100 = pygame.transform.scale(image100, (int(width * scale), int(height * scale)))
+		self.image50 = pygame.transform.scale(image50, (int(width * scale), int(height * scale)))
+		self.image25 = pygame.transform.scale(image25, (int(width * scale), int(height * scale)))
+		self.image = self.image100
+		self.rect = self.image100.get_rect()
+		self.rect.x = x
+		self.rect.y = y
 
-            self.got_target = False
-            self.angle = 0
-            self.last_shot = pygame.time.get_ticks()
+    #fonction pour dessiner la tour
+	def update(self, enemy_group):
+		self.got_target = False
+        #vérifier si l'ennemi est en vie
+		for e in enemy_group:
+			if e.alive:
+				target_x, target_y = e.rect.midbottom
+				self.got_target = True
+				break
+        #calculer l'angle de la tour
+		if self.got_target:
+			x_dist = target_x - self.rect.midleft[0]
+			y_dist = -(target_y - self.rect.midleft[1])
+			self.angle = math.degrees(math.atan2(y_dist, x_dist))
+            #vérifier si la tour peut tirer
+			shot_cooldown = 1000
+			#tirer 
+			if pygame.time.get_ticks() - self.last_shot > shot_cooldown:
+				self.last_shot = pygame.time.get_ticks()
+				bullet = Bullet(bullet_img, self.rect.midleft[0], self.rect.midleft[1], self.angle)
+				bullet_group.add(bullet)
 
-            width = image100.get_width()
-            height = image100.get_height()
-
-            self.image100 = pygame.transform.scale(image100, (int(width * scale), int(height * scale)))
-            self.image50 = pygame.transform.scale(image50, (int(width * scale), int(height * scale)))
-            self.image25 = pygame.transform.scale(image25, (int(width * scale), int(height * scale)))
-            self.image = self.image100
-            self.rect = self.image100.get_rect()
-            self.rect.x = x
-            self.rect.y = y
-
-    def update(self, enemy_group):
-        self.got_target = False
-        
-        for e in enemy_group:
-            if e.alive:
-                target_x, target_y = e.rect.midbottom
-                self.got_target = True
-                break
-        
-        if self.got_target:
-            x_dist = target_x - self.rect.midleft[0]
-            y_dist = -(target_y - self.rect.midleft[1])
-            self.angle = math.degrees(math.atan2(y_dist, x_dist))
-            
-            shot_cooldown = 1000
-            
-            if pygame.time.get_ticks() - self.last_shot > shot_cooldown:
-                self.last_shot = pygame.time.get_ticks()
-                bullet = Bullet(bullet_img, self.rect.midleft[0], self.rect.midleft[1], self.angle)
-                bullet_group.add(bullet)
-                
-        if castle.health <= 250:
-            self.image = self.image25
-        elif castle.health <= 500:
-            self.image = self.image50
-        else:
-            self.image = self.image100
-
+		#Vérifier quelle image utiliser en fonction de la santé
+		if castle.health <= 250:
+			self.image = self.image25
+		elif castle.health <= 500:
+			self.image = self.image50
+		else:
+			self.image = self.image100
 
 #creer la classe bullet
 class Bullet(pygame.sprite.Sprite):
-    def __init__(self,image, x, y, angle):
-        #j'appelle le constructeur de la classe mère
-        pygame.sprite.Sprite.__init__(self)
-        #rect pour l'image du tir
-        self.image= image
-        self.rect= self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
-        self.angle= math.radians(angle)#changer l'angle en radian
-        self.speed = 10
-        self.dx = math.cos(self.angle) * self.speed
-        self.dy = -(math.sin(self.angle) * self.speed)        
+	def __init__(self, image, x, y, angle):#initialiser les variables de la balle
+		pygame.sprite.Sprite.__init__(self)
+		self.image = image
+		self.rect = self.image.get_rect()
+		self.rect.x = x
+		self.rect.y = y
+		self.angle = math.radians(angle)#convertir l'angle en radians
+		self.speed = 10
+        #calculer la vitesse de la balle
+		self.dx = math.cos(self.angle) * self.speed
+		self.dy = -(math.sin(self.angle) * self.speed)
 
-        
-        #mettre a jour la position du tir
-    def update(self):
-        #verifier si le tir sort de l'écran
-        if self.rect.right < 0 or self.rect.left > SCREEN_WIDTH or self.rect.bottom < 0 or self.rect.top > SCREEN_HEIGHT:
-            self.kill()
-            
-        #mouvement du tir
-        self.rect.x += self.dx
-        self.rect.y += self.dy
-        
+
+	def update(self):
+        #vérifier si la balle est hors de l'écran
+		if self.rect.right < 0 or self.rect.left > SCREEN_WIDTH or self.rect.bottom < 0 or self.rect.top > SCREEN_HEIGHT:
+			self.kill()			
+
+		#déplacer la balle
+		self.rect.x += self.dx
+		self.rect.y += self.dy
+
         
 #création d'une class pour le viseur 
 class Crosshair():
@@ -334,17 +325,18 @@ class Crosshair():
         
     #fonction pour dessiner le viseur sur l'écran
     def draw(self):
-        mx, my = pygame.mouse.get_pos()
-        self.rect.center = (mx, my)
-        screen.blit(self.image, self.rect)
+        mx, my = pygame.mouse.get_pos()#obtenir la position de la souris
+        self.rect.center = (mx, my)#définir le centre du viseur sur la position de la souris
+        screen.blit(self.image, self.rect)#dessiner le viseur sur l'écran
 		
         
         
 #creer le chateau
-castle= Castle(castle_img_100, castle_img_50, castle_img_25, SCREEN_WIDTH - 70, SCREEN_HEIGHT - 200, 0.2)  
+castle = Castle(castle_img_100, castle_img_50, castle_img_25, SCREEN_WIDTH - 250, SCREEN_HEIGHT - 300, 0.2)
 
 #créer le viseur 
 crosshair = Crosshair(0.025)
+
 #diviser le viseur par 2 pour le réduire de moitié
 crosshair_width = crosshair.image.get_width() // 2
 
@@ -359,11 +351,6 @@ tower_group = pygame.sprite.Group()
 bullet_group= pygame.sprite.Group()
 enemy_group= pygame.sprite.Group()
 allies_group = pygame.sprite.Group()
-
-
-#creer les ennemis
-enemy1= Enemies(enemy_health[0],enemy_animations[0], 0,SCREEN_HEIGHT - 100, 1)
-enemy_group.add(enemy1)
 
 #creer les alliés
 ###### en cours de création ##
@@ -416,11 +403,9 @@ while run:
                         tower_positions[len(tower_group)][1],
                         0.2
                         )#ajouter la tour au groupe de tours
-                    
                     tower_group.add(tower)#ajouter la tour au groupe de tours
                     
-                    #soustraie le coût de la tour de l'argent du chateau
-                    castle.money -= TOWER_COST
+                    castle.money -= TOWER_COST#soustraie le coût de la tour
             if armour_button.draw(screen):
                 castle.armour()
                 
@@ -432,8 +417,7 @@ while run:
                     e = random.randint(0, len(enemy_types) -1)#choisir un ennemi aléatoire
                     enemy = Enemies(enemy_health[e], enemy_animations[e], -100, SCREEN_HEIGHT - 100, 1)
                     enemy_group.add(enemy)
-                    #réinitialiser le temps de la dernière vague
-                    last_enemy = pygame.time.get_ticks()
+                    last_enemy = pygame.time.get_ticks()#dernier ennemi
                     #augmenter la difficulté du niveau des ennemis
                     level_difficulty += enemy_health[e]
                     
@@ -452,7 +436,6 @@ while run:
                     next_level = True
                     #réinitialiser le temps du niveau
                     level_reset_time = pygame.time.get_ticks()
-                    
             
             #passage à un autre niveau
             if next_level == True:
@@ -501,6 +484,7 @@ while run:
         if event.type == pygame.QUIT:
             run = False
 
-        #update display window
-        pygame.display.update()
+    #update display window
+    pygame.display.update()
+        
 pygame.quit()

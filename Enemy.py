@@ -27,7 +27,7 @@ class Enemies(pygame.sprite.Sprite):
         if self.alive:#si l'ennemi est en vie
             if pygame.sprite.spritecollide(self, bullet_group, True):#si l'ennemi est en collision avec une balle
                 #réduire la santé de l'ennemi
-                self.health -= 50
+                self.health -= 25
                 if self.health < 0:
                     self.health = 0
                     self.alive = False

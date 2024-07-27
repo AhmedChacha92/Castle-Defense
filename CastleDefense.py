@@ -6,8 +6,7 @@ import os
 
 import button
 from Enemy import Enemies
-# from Allies import Allies
-
+# from Allies import AlliesRuntimeError: Execution of 'copyfile' failed - no more attempts left!
 
 #initialisation de pygame
 pygame.init()
